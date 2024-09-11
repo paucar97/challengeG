@@ -1,6 +1,8 @@
-import pandas as pd
+import os
 import json
+import pandas as pd
 
+from dotenv import load_dotenv
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from typing import List
 from sqlalchemy import create_engine
@@ -12,9 +14,18 @@ from datetime import datetime
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
 
+load_dotenv()
+
 app = FastAPI()
 
-DATABASE_URL = "sqlite:///globant.db"
+RDS_ENDPOINT = os.getenv("DB_HOST")
+PORT = os.getenv("DB_PORT")
+USERNAME = os.getenv("DB_USER")
+PASSWORD = os.getenv("DB_PASSWORD")
+DATABASE = os.getenv("DB_NAME")
+
+
+DATABASE_URL = f"mysql+pymysql://{USERNAME}:{PASSWORD}@{RDS_ENDPOINT}:{PORT}/{DATABASE}"
 engine = create_engine(DATABASE_URL)
 Session = sessionmaker(bind=engine)
 session = Session()
@@ -24,18 +35,18 @@ Base = declarative_base()
 class Department(Base):
     __tablename__ = 'departments'
     id = Column(Integer, primary_key=True)
-    department = Column(String, nullable=True)
+    department = Column(String(100), nullable=True)
 
 class Job(Base):
     __tablename__ = 'jobs'
     id = Column(Integer, primary_key=True)
-    job = Column(String, nullable=True)
+    job = Column(String(100), nullable=True)
 
 class Employee(Base):
     __tablename__ = 'employees'
     id = Column(Integer, primary_key=True)
-    name = Column(String, nullable=True)
-    datetime = Column(String, nullable=True)
+    name = Column(String(100), nullable=True)
+    datetime = Column(String(100), nullable=True)
     department_id = Column(Integer, ForeignKey('departments.id'), nullable=True)
     job_id = Column(Integer, ForeignKey('jobs.id'), nullable=True)
 
@@ -79,15 +90,15 @@ def process_and_insert_data(df: pd.DataFrame, model):
 async def hired_by_quarter():
     try:
         query = """
-            SELECT d.department, j.job,
-                SUM(CASE WHEN strftime('%m', datetime) BETWEEN '01' AND '03' THEN 1 ELSE 0 END) AS Q1,
-                SUM(CASE WHEN strftime('%m', datetime) BETWEEN '04' AND '06' THEN 1 ELSE 0 END) AS Q2,
-                SUM(CASE WHEN strftime('%m', datetime) BETWEEN '07' AND '09' THEN 1 ELSE 0 END) AS Q3,
-                SUM(CASE WHEN strftime('%m', datetime) BETWEEN '10' AND '12' THEN 1 ELSE 0 END) AS Q4
+            SELECT d.department, j.job, 
+                SUM(CASE WHEN EXTRACT(QUARTER FROM e.datetime) = 1 THEN 1 ELSE 0 END) AS Q1,
+                SUM(CASE WHEN EXTRACT(QUARTER FROM e.datetime) = 2 THEN 1 ELSE 0 END) AS Q2,
+                SUM(CASE WHEN EXTRACT(QUARTER FROM e.datetime) = 3 THEN 1 ELSE 0 END) AS Q3,
+                SUM(CASE WHEN EXTRACT(QUARTER FROM e.datetime) = 4 THEN 1 ELSE 0 END) AS Q4
             FROM employees e
             JOIN departments d ON e.department_id = d.id
             JOIN jobs j ON e.job_id = j.id
-            WHERE strftime('%Y', e.datetime) = '2021'
+            WHERE EXTRACT(YEAR FROM e.datetime) = 2021
             GROUP BY department, job
             ORDER BY department, job;
         """
@@ -104,18 +115,16 @@ async def departments_above_average():
             WITH department_hires AS (
                 SELECT department_id, COUNT(*) AS hires
                 FROM employees
-                WHERE strftime('%Y', datetime) = '2021'
+                WHERE EXTRACT(YEAR FROM datetime) = '2021'
                 GROUP BY department_id
             ),
             avg_hires AS (
                 SELECT AVG(hires) AS avg_hires FROM department_hires
             )
-            --select * from avg_hires
             SELECT d.id, d.department, dh.hires
             FROM department_hires dh
             JOIN departments d ON dh.department_id = d.id
             where dh.hires > (select avg_hires from avg_hires)
-            --JOIN avg_hires ON dh.hires > avg_hires.avg_hires
             ORDER BY dh.hires DESC;
         """
         df = pd.read_sql_query(query,engine)
