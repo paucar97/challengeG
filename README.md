@@ -1,5 +1,3 @@
-# challengeG
-
 # Data Engineering Coding Challenge
 
 ## Descripción del Proyecto
@@ -29,3 +27,83 @@ Clona este repositorio en tu máquina local:
 git clone https://github.com/usuario/proyecto.git
 cd proyecto
 ```
+
+### 2. Crear y activar un entorno virtual
+
+Crea un entorno virtual en Python 3.12 y actívalo:
+
+```bash
+python3.12 -m venv venv
+source venv/bin/activate
+```
+
+### 3. Instalar dependencias
+
+Instala las dependencias desde el archivo `requirements.txt`:
+
+```bash
+pip install -r requirements.txt
+```
+
+### 4. Configurar variables de entorno
+
+Crea un archivo `.env` en el directorio raíz con las variables de entorno necesarias para la base de datos:
+
+```bash
+DB_HOST=your_database_host
+DB_PORT=3306
+DB_NAME=your_database_name
+DB_USER=your_database_user
+DB_PASSWORD=your_database_password
+```
+
+### 5. Ejecutar la aplicación localmente
+
+Para ejecutar la aplicación localmente utilizando Uvicorn:
+
+```bash
+uvicorn app:app --reload
+```
+
+La aplicación estará disponible en: `http://127.0.0.1:8000`.
+
+Puedes acceder a la documentación de la API generada automáticamente en:
+
+Swagger UI: `http://127.0.0.1:8000/docs`
+ReDoc: `http://127.0.0.1:8000/redoc`
+
+## Uso con Docker
+
+### 1. Construir la imagen Docker
+
+Si prefieres levantar la aplicación con Docker, primero asegúrate de tener Docker instalado y luego construye la imagen:
+
+```bash
+docker build -t data-engineering-app .
+```
+
+### 2. Ejecutar el contenedor
+
+Ejecuta el contenedor de Docker mapeando el puerto 8000:
+
+```bash
+docker run -d -p 8000:8000 --env-file .env data-engineering-app
+```
+
+Esto ejecutará la aplicación en `http://localhost:8000`.
+
+## Endpoints Principales
+
+### 1. Subida de archivos CSV:
+
+POST `/upload/{file_type}`
+Parámetro `file_type`: Puede ser `employee`, `department`, o `job`.
+Envío del archivo CSV en el cuerpo de la solicitud usando `multipart/form-data`.
+
+### 2. Consultar empleados contratados por trimestre:
+
+GET `/hired_by_quarter/`
+
+### 3. Consultar departamentos que contrataron más que la media:
+
+GET `/departments_above_average/`
