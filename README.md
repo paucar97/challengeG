@@ -96,15 +96,16 @@ Esto ejecutará la aplicación en `http://localhost:8000`.
 
 ### 1. Subida de archivos CSV:
 
-POST `/upload/{file_type}`
+- POST `/upload/{file_type}`
 
-Parámetro `file_type`: Puede ser `employee`, `department`, o `job`.
-Envío del archivo CSV en el cuerpo de la solicitud usando `multipart/form-data`.
+- Parámetro `file_type`: Puede ser `employee`, `department`, o `job`.
+
+- Envío del archivo CSV en el cuerpo de la solicitud usando `multipart/form-data`.
 
 ### 2. Consultar empleados contratados por trimestre:
 
-GET `/hired_by_quarter/`
+- GET `/hired_by_quarter/`
 
 ### 3. Consultar departamentos que contrataron más que la media:
 
-GET `/departments_above_average/`
+- GET `/departments_above_average/`
