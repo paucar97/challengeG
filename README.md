@@ -24,8 +24,8 @@ Este proyecto es parte del reto de **Data Engineering** de **Globant**, cuyo obj
 Clona este repositorio en tu máquina local:
 
 ```bash
-git clone https://github.com/usuario/proyecto.git
-cd proyecto
+git clone https://github.com/paucar97/challengeG.git
+cd challengeG
 ```
 
 ### 2. Crear y activar un entorno virtual
@@ -79,7 +79,7 @@ ReDoc: `http://127.0.0.1:8000/redoc`
 Si prefieres levantar la aplicación con Docker, primero asegúrate de tener Docker instalado y luego construye la imagen:
 
 ```bash
-docker build -t data-engineering-app .
+docker build -t my-app-g .
 ```
 
 ### 2. Ejecutar el contenedor
@@ -87,7 +87,7 @@ docker build -t data-engineering-app .
 Ejecuta el contenedor de Docker mapeando el puerto 8000:
 
 ```bash
-docker run -d -p 8000:8000 --env-file .env data-engineering-app
+docker run -d -p 8000:8000 --env-file .env my-app-g
 ```
 
 Esto ejecutará la aplicación en `http://localhost:8000`.
@@ -97,6 +97,7 @@ Esto ejecutará la aplicación en `http://localhost:8000`.
 ### 1. Subida de archivos CSV:
 
 POST `/upload/{file_type}`
+
 Parámetro `file_type`: Puede ser `employee`, `department`, o `job`.
 Envío del archivo CSV en el cuerpo de la solicitud usando `multipart/form-data`.
 
