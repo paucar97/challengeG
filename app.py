@@ -62,7 +62,6 @@ async def upload_file(file_type: str,file: UploadFile = File(...)):
         if file_type == "employee":
             df.columns = ['id','name','datetime','department_id','job_id']
             df['datetime'] = df['datetime'].apply(lambda x: datetime.strptime(x,'%Y-%m-%dT%H:%M:%SZ').strftime('%Y-%m-%d %H:%M:%S') if x is not None else x)
-            #df['datetime'] = df['datetime'].apply(lambda x: datetime.strptime(x,'%Y-%m-%dT%H:%M:%SZ') if x is not None else x)
             process_and_insert_data(df, Employee)
         elif file_type == "department":
             df.columns = ['id','department']
@@ -82,7 +81,6 @@ def process_and_insert_data(df: pd.DataFrame, model):
     data = df.to_dict(orient='records')
     for i in range(0, len(data), batch_size):
         batch = data[i:i + batch_size]
-        # Guardar el batch en la base de datos (ajustar según tus modelos)
         session.bulk_insert_mappings(model, batch)
         session.commit()
 
