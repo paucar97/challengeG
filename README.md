@@ -1,53 +1,56 @@
 # Data Engineering Coding Challenge
 
-## Descripción del Proyecto
+## Project Description
 
-Este proyecto es parte del reto de **Data Engineering** de **Globant**, cuyo objetivo es desarrollar una API que maneje la migración de datos desde archivos CSV hacia una base de datos SQL, así como exponer algunos endpoints para realizar consultas SQL sobre los datos cargados.
+This project is part of Globant's Data Engineering challenge, aiming to develop an API that handles data migration from CSV files to an SQL database, and exposes endpoints to perform SQL queries on the loaded data.
 
-### Funcionalidades principales:
+### Main Features:
 
-1. **Subida de archivos CSV**: La API permite subir archivos CSV con datos históricos de empleados, departamentos y trabajos, que se insertan en la base de datos.
-2. **Inserción por lotes**: Los datos pueden ser cargados en lotes de hasta 1000 filas por solicitud.
-3. **Consultas SQL**: La API expone endpoints que permiten consultar métricas como las contrataciones por trimestre y los departamentos que contrataron más empleados que el promedio.
-4. **Variables de Entorno**: El proyecto utiliza un archivo `.env` para la configuración de variables sensibles como las credenciales de la base de datos.
+1. **CSV File Upload**: The API allows uploading CSV files with historical data of employees, departments, and jobs, which are inserted into the database.
 
-## Requisitos
+2. **Batch Insertion**: Data can be uploaded in batches of up to 1000 rows per request.
 
-- **Python 3.12** o superior
-- **Docker** (opcional, si deseas levantar la aplicación en un contenedor)
-- **MySQL** o cualquier otra base de datos SQL que prefieras
+3. **SQL Queries**: The API exposes endpoints that allow querying metrics like hires per quarter and departments that hired more employees than the average.
 
-## Instalación Local
+4. **Environment Variables**: The project uses a .env file for configuring sensitive variables such as database credentials.
 
-### 1. Clonar el repositorio
+## Requirements
 
-Clona este repositorio en tu máquina local:
+- **Python 3.12** or higher
+- **Docker** (optional, if you wish to run the application in a container)
+- **MySQL** or any other SQL database of your choice
+
+## Local Installation
+
+### 1. Clone the Repository
+
+Clone this repository on your local machine:
 
 ```bash
 git clone https://github.com/paucar97/challengeG.git
 cd challengeG
 ```
 
-### 2. Crear y activar un entorno virtual
+### 2. Create and Activate a Virtual Environment
 
-Crea un entorno virtual en Python 3.12 y actívalo:
+Create a virtual environment in Python 3.12 and activate it:
 
 ```bash
 python3.12 -m venv venv
 source venv/bin/activate
 ```
 
-### 3. Instalar dependencias
+### 3. Install Dependencies
 
-Instala las dependencias desde el archivo `requirements.txt`:
+Install the dependencies from the `requirements.txt`:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4. Configurar variables de entorno
+### 4. Set Up Environment Variables
 
-Crea un archivo `.env` en el directorio raíz con las variables de entorno necesarias para la base de datos:
+Create a `.env` file in the root directory with the necessary environment variables for the database:
 
 ```bash
 DB_HOST=your_database_host
@@ -57,26 +60,24 @@ DB_USER=your_database_user
 DB_PASSWORD=your_database_password
 ```
 
-### 5. Ejecutar la aplicación localmente
+### 5. Run the Application Locally
 
-Para ejecutar la aplicación localmente utilizando Uvicorn:
+To run the application locally using Uvicorn:
 
 ```bash
 uvicorn app:app --reload
 ```
 
-La aplicación estará disponible en: `http://127.0.0.1:8000`.
+The application will be available at: `http://127.0.0.1:8000`.
 
-Puedes acceder a la documentación de la API generada automáticamente en:
+You can access the automatically generated API documentation at:
 
 Swagger UI: `http://127.0.0.1:8000/docs`
 ReDoc: `http://127.0.0.1:8000/redoc`
 
-## Uso con Docker
+## Using Docker
 
-### 1. Construir la imagen Docker
-
-Si prefieres levantar la aplicación con Docker, primero asegúrate de tener Docker instalado y luego construye la imagen:
+### 1. Build the Docker Image
 
 ```bash
 docker build -t my-app-g .
@@ -84,28 +85,24 @@ docker build -t my-app-g .
 
 ### 2. Ejecutar el contenedor
 
-Ejecuta el contenedor de Docker mapeando el puerto 8000:
-
 ```bash
-docker run -d -p 8000:8000 --env-file .env my-app-g
+docker run -d -p 8080:8000 --env-file .env my-app-g
 ```
 
-Esto ejecutará la aplicación en `http://localhost:8000`.
+Esto ejecutará la aplicación en `http://localhost:8080`.
 
-## Endpoints Principales
+## Main Endpoints
 
-### 1. Subida de archivos CSV:
+### 1. Upload CSV Files:
 
 - POST `/upload/{file_type}`
 
-- Parámetro `file_type`: Puede ser `employee`, `department`, o `job`.
+- `file_type` parameter: Can be `employee`, `department`, or `job`.
 
-- Envío del archivo CSV en el cuerpo de la solicitud usando `multipart/form-data`.
-
-### 2. Consultar empleados contratados por trimestre:
+### 2. Query Employees Hired by Quarter:
 
 - GET `/hired_by_quarter/`
 
-### 3. Consultar departamentos que contrataron más que la media:
+### 3. Query Departments that Hired More than Average:
 
 - GET `/departments_above_average/`
